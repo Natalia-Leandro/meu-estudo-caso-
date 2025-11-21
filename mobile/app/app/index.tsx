@@ -58,7 +58,7 @@ export default function Index() {
         </Text>
         <Button
           mode="contained"
-          onPress={() => router.push("/produtos")}
+          onPress={() => router.push("./produtos")}
           style={{
             backgroundColor: "#1976d2",
             borderRadius: 8,

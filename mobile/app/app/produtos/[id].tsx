@@ -67,7 +67,7 @@ export default function EditarProduto() {
           if (router.canGoBack?.()) {
             router.back();
           } else {
-            router.replace("/produtos");
+            router.replace("./produtos");
           }
         }}
       />

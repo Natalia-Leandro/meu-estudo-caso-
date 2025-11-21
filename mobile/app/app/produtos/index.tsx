@@ -50,7 +50,7 @@ export default function Produtos() {
           <Card style={{ marginBottom: 12 }}>
             <Card.Title
               title={item.nome}
-              subtitle={`R$ ${item.preco.toFixed(2)}`}
+              subtitle={`R$ ${Number(item.preco ?? 0).toFixed(2)}`}
             />
             <Card.Actions>
               <Button
