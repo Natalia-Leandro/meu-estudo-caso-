@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Alert } from "react-native";
 import { Text } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -13,7 +13,7 @@ export default function NovoProduto() {
   const handleChange = (name: keyof Produto, value: string) => {
     setProduto((prev) => ({
       ...prev,
-      [name]: name === "preco" ? value : value,
+      [name]: value,
     }));
   };
 
@@ -21,16 +21,22 @@ export default function NovoProduto() {
     const nome = data?.nome ?? produto.nome;
     const precoStr = data?.preco ?? produto.preco;
     const preco =
-      typeof precoStr === "string" ? parseFloat(precoStr) : precoStr;
+      typeof precoStr === "string"
+        ? parseFloat(precoStr)
+        : precoStr;
 
-    if (!nome || !preco) {
-      alert("Preencha todos os campos!");
+    if (!nome || isNaN(preco)) {
+      alert("Preencha todos os campos corretamente!");
       return;
     }
+
     setLoading(true);
     try {
       await produtoService.criar({ nome, preco });
+      Alert.alert("Sucesso", "Produto criado com sucesso!");
       router.replace("/produtos");
+    } catch {
+      Alert.alert("Erro", "Não foi possível criar o produto.");
     } finally {
       setLoading(false);
     }
@@ -40,10 +46,11 @@ export default function NovoProduto() {
     <View style={styles.container}>
       <Text
         variant="titleLarge"
-        style={{ textAlign: "center", marginBottom: 20, color: "#fff" }}
+        style={{ textAlign: "center", marginBottom: 20, color: "#1976d2" }}
       >
         Novo Produto
       </Text>
+
       <FormProduto
         produto={produto}
         loading={loading}

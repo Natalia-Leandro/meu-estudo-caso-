@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { View, FlatList, ActivityIndicator, Alert } from "react-native";
-import { Card, Button, Text, FAB } from "react-native-paper";
+import { View, FlatList, ActivityIndicator, Alert, Platform } from "react-native";
+import { Button, Text, FAB } from "react-native-paper";
 import { useRouter } from "expo-router";
 import produtoService, { Produto } from "../../scripts/produtoService";
 
@@ -24,15 +24,25 @@ export default function Produtos() {
   }, []);
 
   const handleDelete = (id: number) => {
+    if (Platform.OS === "web") {
+      const confirmar = window.confirm("Deseja realmente excluir?");
+      if (!confirmar) return;
+
+      produtoService.excluir(id).then(() => {
+        setProdutos((prev) => prev.filter((p) => p.id !== id));
+        alert("Produto excluído com sucesso!");
+      });
+      return;
+    }
+
     Alert.alert("Excluir Produto", "Deseja realmente excluir este produto?", [
       { text: "Cancelar", style: "cancel" },
       {
         text: "Excluir",
         style: "destructive",
-        // Use replace para evitar empilhar a navegação ao recarregar a lista
         onPress: async () => {
           await produtoService.excluir(id);
-          router.replace("/produtos");
+          setProdutos((prev) => prev.filter((p) => p.id !== id));
         },
       },
     ]);
@@ -42,33 +52,83 @@ export default function Produtos() {
     return <ActivityIndicator size="large" style={{ marginTop: 40 }} />;
 
   return (
-    <View style={{ flex: 1, padding: 16 }}>
+    <View style={{ flex: 1, padding: 16, backgroundColor: "#ffeaf3" }}>
       <FlatList
         data={produtos}
         keyExtractor={(item) => item.id?.toString() ?? ""}
         renderItem={({ item }) => (
-          <Card style={{ marginBottom: 12 }}>
-            <Card.Title
-              title={item.nome}
-              subtitle={`R$ ${Number(item.preco ?? 0).toFixed(2)}`}
-            />
-            <Card.Actions>
+          <View
+            style={{
+              marginBottom: 16,
+              padding: 18,
+              backgroundColor: "#ffffff",
+              borderRadius: 18,
+              borderWidth: 2,
+              borderColor: "#ffb6d5",
+              shadowColor: "#ff6fa3",
+              shadowOpacity: 0.15,
+              shadowRadius: 6,
+              elevation: 4,
+            }}
+          >
+            {/* Nome */}
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "700",
+                marginBottom: 4,
+                color: "#ff3e84",
+              }}
+            >
+              {item.nome}
+            </Text>
+
+            {/* Preço */}
+            <Text
+              style={{
+                fontSize: 16,
+                marginBottom: 18,
+                color: "#555",
+              }}
+            >
+              R$ {Number(item.preco).toFixed(2)}
+            </Text>
+
+            {/* Botões */}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "flex-end",
+                gap: 12,
+              }}
+            >
               <Button
                 mode="outlined"
-                onPress={() => router.replace(`/produtos/${item.id}`)}
-                style={{ marginRight: 8 }}
+                icon="pencil"
+                compact
+                style={{
+                  borderColor: "#ff6fa3",
+                }}
+                textColor="#ff6fa3"
+                onPress={() => router.push(`/produtos/${item.id}`)}
               >
                 Editar
               </Button>
+
               <Button
                 mode="outlined"
-                textColor="#d32f2f"
+                icon="delete"
+                compact
+                style={{
+                  borderColor: "#ff3e84",
+                }}
+                textColor="#ff3e84"
                 onPress={() => handleDelete(item.id!)}
               >
                 Excluir
               </Button>
-            </Card.Actions>
-          </Card>
+            </View>
+          </View>
         )}
         ListEmptyComponent={
           <Text style={{ textAlign: "center", marginTop: 20 }}>
@@ -76,16 +136,16 @@ export default function Produtos() {
           </Text>
         }
       />
+
       <FAB
         icon="plus"
         style={{
           position: "absolute",
           right: 16,
           bottom: 16,
-          backgroundColor: "#1976d2",
-          pointerEvents: "auto", // Adicionado ao objeto style
+          backgroundColor: "#ff3e84",
         }}
-        onPress={() => router.replace("/produtos/novo")}
+        onPress={() => router.push("/produtos/novo")}
         color="#fff"
       />
     </View>
