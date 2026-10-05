@@ -206,20 +206,6 @@ ou rode no navegador com W
 /produtos/novo    → novo produto
 /produtos/[id]    → editar produto
 
-🖼️ Screenshots (opcional)
-
-Você pode adicionar prints como estes:
-
-Tela inicial
-
-Lista de produtos
-
-Formulário novo produto
-
-Edição de produto
-
-Se quiser, posso gerar a seção formatada para você colocar no README.
-
 ✒️ Autoria
 
 Projeto desenvolvido por:
